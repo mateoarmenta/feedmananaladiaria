@@ -1,0 +1,31 @@
+name: Actualizar feed RSS
+
+on:
+  schedule:
+    # 15:00 UTC = 12:00 Montevideo, de lunes a viernes
+    - cron: '0 15 * * 1-5'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Buscar episodio de hoy y armar el feed
+        run: node scripts/update-feed.js
+
+      - name: Guardar cambios en el repositorio
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add episodes.json feed.xml
+          git diff --staged --quiet || git commit -m "Actualizar feed"
+          git push
