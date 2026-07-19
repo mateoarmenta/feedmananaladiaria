@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd">
+<channel>
+<title>La mañana de la diaria</title>
+<link>https://radio.ladiaria.com.uy/la-manana-de-la-diaria</link>
+<description>Feed extraoficial generado automáticamente a partir de los archivos públicos de audio de la diaria Radio.</description>
+<language>es-uy</language>
+<itunes:author>la diaria Radio</itunes:author>
+<item>
+<title>La mañana de la diaria — 19/7/2026</title>
+<link>https://radio.ladiaria.com.uy/la-manana-de-la-diaria</link>
+<guid isPermaLink="false">https://ladiaria.com.uy/media/audiologue/La_manana_de_la_diaria_17_07_2026_PGM_Completo.mp3.mpeg</guid>
+<pubDate>Sun, 19 Jul 2026 19:57:37 GMT</pubDate>
+<enclosure url="https://ladiaria.com.uy/media/audiologue/La_manana_de_la_diaria_17_07_2026_PGM_Completo.mp3.mpeg" type="audio/mpeg" length="0"/>
+</item>
+</channel>
+</rss>
