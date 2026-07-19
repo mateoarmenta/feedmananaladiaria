@@ -8,6 +8,25 @@ const EPISODES_FILE = 'episodes.json';
 const FEED_FILE = 'feed.xml';
 const MAX_EPISODIOS = 60;
 
+function extraerFechaDeUrl(url) {
+  // Patrón DD_MM_AAAA, ej: ..._17_07_2026_...
+  let m = url.match(/_(\d{2})_(\d{2})_(20\d{2})_/);
+  if (m) {
+    const [, dd, mm, yyyy] = m;
+    return new Date(Date.UTC(+yyyy, +mm - 1, +dd, 12, 0, 0));
+  }
+
+  // Patrón AAMMDD pegado, ej: ..._260716_...
+  m = url.match(/_(\d{2})(\d{2})(\d{2})_/);
+  if (m) {
+    const [, yy, mm, dd] = m;
+    const yyyy = 2000 + parseInt(yy, 10);
+    return new Date(Date.UTC(yyyy, +mm - 1, +dd, 12, 0, 0));
+  }
+
+  return null;
+}
+
 async function main() {
   const res = await fetch(SHOW_URL, {
     headers: {
@@ -49,10 +68,12 @@ async function main() {
     return;
   }
 
-  const hoy = new Date();
+  const fecha = extraerFechaDeUrl(audioUrl) || new Date();
   episodes.unshift({
-    date: hoy.toISOString(),
-    title: 'La mañana de la diaria — ' + hoy.toLocaleDateString('es-UY'),
+    date: fecha.toISOString(),
+    title:
+      'La mañana de la diaria — ' +
+      fecha.toLocaleDateString('es-UY', { timeZone: 'UTC' }),
     url: audioUrl
   });
   episodes = episodes.slice(0, MAX_EPISODIOS);
