@@ -1,8 +1,9 @@
 name: Actualizar feed RSS
 
 on:
-  schedule:
-   - cron: '5 19 * * 1-5'
+schedule:
+    # 17:05 UTC = 14:05 Montevideo, de lunes a viernes
+    - cron: '5 17 * * 1-5'
   workflow_dispatch: {}
 
 permissions:
