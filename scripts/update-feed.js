@@ -1,89 +1,86 @@
-// Actualiza el feed RSS de "La mañana de la diaria" buscando la URL del
-// audio del día directamente en el código fuente de la página del programa.
+// Actualiza el feed RSS de "La mañana de la diaria".
+//
+// La diaria no publica un patrón de nombre de archivo 100% fijo para sus
+// audios (a veces cambia la extensión, a veces cambia hasta la estructura
+// del nombre). Este script prueba varias combinaciones conocidas para la
+// fecha de hoy y se queda con la primera que exista de verdad en el
+// servidor. Si algún día aparece un patrón nuevo que no está en esta lista,
+// el script no va a encontrar nada ese día — en ese caso hay que agregar el
+// patrón nuevo a mano (avisar a Claude con la URL real encontrada).
 
 const fs = require('fs');
 
-const SHOW_URL = 'https://radio.ladiaria.com.uy/la-manana-de-la-diaria';
 const EPISODES_FILE = 'episodes.json';
 const FEED_FILE = 'feed.xml';
 const MAX_EPISODIOS = 60;
+const BASE = 'https://ladiaria.com.uy/media/audiologue/';
 
-function extraerFechaDeUrl(url) {
-  // Patrón DD_MM_AAAA, ej: ..._17_07_2026_...
-  let m = url.match(/_(\d{2})_(\d{2})_(20\d{2})_/);
-  if (m) {
-    const [, dd, mm, yyyy] = m;
-    return new Date(Date.UTC(+yyyy, +mm - 1, +dd, 12, 0, 0));
+function pad2(n) {
+  return n < 10 ? '0' + n : '' + n;
+}
+
+// Genera la lista de URLs candidatas para una fecha dada, cubriendo todos
+// los patrones de nombre que ya vimos usar a la diaria.
+function candidatosParaFecha(fecha) {
+  const yy = pad2(fecha.getUTCFullYear() % 100);
+  const mm = pad2(fecha.getUTCMonth() + 1);
+  const dd = pad2(fecha.getUTCDate());
+  const yyyy = fecha.getUTCFullYear();
+
+  const yymmdd = yy + mm + dd; // ej: 260724
+  const ddmmyyyy = dd + '_' + mm + '_' + yyyy; // ej: 24_07_2026
+
+  const nombresConAcento = [
+    'LaMa%C3%B1anaDeLaDiaria' // "LaMañanaDeLaDiaria" URL-encoded
+  ];
+  const nombresSinAcento = ['La_manana_de_la_diaria'];
+
+  const candidatos = [];
+
+  // Patrón "LaMañanaDeLaDiaria_YYMMDD_CMS.EXT"
+  nombresConAcento.forEach((nombre) => {
+    ['mp3', 'mov', 'mp3.mpeg', 'm4a'].forEach((ext) => {
+      candidatos.push(BASE + nombre + '_' + yymmdd + '_CMS.' + ext);
+    });
+  });
+
+  // Patrón "La_manana_de_la_diaria_DD_MM_YYYY_PGM_Completo.EXT"
+  nombresSinAcento.forEach((nombre) => {
+    ['mp3.mpeg', 'mp3', 'mov', 'm4a'].forEach((ext) => {
+      candidatos.push(
+        BASE + nombre + '_' + ddmmyyyy + '_PGM_Completo.' + ext
+      );
+    });
+  });
+
+  return candidatos;
+}
+
+async function existe(url) {
+  try {
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: { Range: 'bytes=0-1' }
+    });
+    return res.status === 200 || res.status === 206;
+  } catch (err) {
+    return false;
   }
+}
 
-  // Patrón AAMMDD pegado, ej: ..._260716_...
-  m = url.match(/_(\d{2})(\d{2})(\d{2})_/);
-  if (m) {
-    const [, yy, mm, dd] = m;
-    const yyyy = 2000 + parseInt(yy, 10);
-    return new Date(Date.UTC(yyyy, +mm - 1, +dd, 12, 0, 0));
+async function buscarAudioDeHoy() {
+  const hoy = new Date();
+  const candidatos = candidatosParaFecha(hoy);
+
+  console.log('Probando', candidatos.length, 'URLs candidatas para hoy...');
+
+  for (const url of candidatos) {
+    const ok = await existe(url);
+    console.log(ok ? 'ENCONTRADO ->' : 'no existe  ->', url);
+    if (ok) return { url, fecha: hoy };
   }
 
   return null;
-}
-
-async function main() {
-  const res = await fetch(SHOW_URL, {
-    headers: {
-      'User-Agent':
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36'
-    }
-  });
-
-  if (!res.ok) {
-    console.log('La página respondió con error:', res.status);
-    return;
-  }
-
-  const html = await res.text();
-
-  const regex = /https?:\/\/[^\s"'\\]+\.mp3(?:\.mpeg)?/g;
-  const matches = [...new Set(html.match(regex) || [])];
-
-  console.log('URLs de audio encontradas en la página:', matches);
-
-  if (matches.length === 0) {
-    console.log('No se encontró ninguna URL de audio hoy. No se agrega nada.');
-    return;
-  }
-
-  // Si aparece más de una URL, nos quedamos con la que tenga más cara de
-  // episodio del programa (contiene "manana" o "audiologue" en el path).
-  const audioUrl =
-    matches.find((u) => /manana|audiologue/i.test(u)) || matches[0];
-
-  let episodes = [];
-  if (fs.existsSync(EPISODES_FILE)) {
-    episodes = JSON.parse(fs.readFileSync(EPISODES_FILE, 'utf8'));
-  }
-
-  const yaExiste = episodes.some((ep) => ep.url === audioUrl);
-  if (yaExiste) {
-    console.log('Este episodio ya estaba guardado. No se agrega de nuevo.');
-    return;
-  }
-
-  const fecha = extraerFechaDeUrl(audioUrl) || new Date();
-  episodes.unshift({
-    date: fecha.toISOString(),
-    title:
-      'La mañana de la diaria — ' +
-      fecha.toLocaleDateString('es-UY', { timeZone: 'UTC' }),
-    url: audioUrl
-  });
-  episodes = episodes.slice(0, MAX_EPISODIOS);
-
-  fs.writeFileSync(EPISODES_FILE, JSON.stringify(episodes, null, 2));
-  console.log('Episodio nuevo agregado:', audioUrl);
-
-  const rss = buildRss(episodes);
-  fs.writeFileSync(FEED_FILE, rss);
-  console.log('feed.xml actualizado con', episodes.length, 'episodios.');
 }
 
 function escapeXml(s) {
@@ -120,6 +117,47 @@ ${items}
 </channel>
 </rss>
 `;
+}
+
+async function main() {
+  const encontrado = await buscarAudioDeHoy();
+
+  if (!encontrado) {
+    console.log(
+      'No se encontró ningún archivo de audio hoy con los patrones conocidos. ' +
+        'Puede ser que hoy no haya programa, o que la diaria haya usado un ' +
+        'nombre de archivo nuevo que todavía no conocemos.'
+    );
+    return;
+  }
+
+  let episodes = [];
+  if (fs.existsSync(EPISODES_FILE)) {
+    episodes = JSON.parse(fs.readFileSync(EPISODES_FILE, 'utf8'));
+  }
+
+  const yaExiste = episodes.some((ep) => ep.url === encontrado.url);
+  if (yaExiste) {
+    console.log('Este episodio ya estaba guardado. No se agrega de nuevo.');
+    return;
+  }
+
+  const fecha = encontrado.fecha;
+  episodes.unshift({
+    date: fecha.toISOString(),
+    title:
+      'La mañana de la diaria — ' +
+      fecha.toLocaleDateString('es-UY', { timeZone: 'UTC' }),
+    url: encontrado.url
+  });
+  episodes = episodes.slice(0, MAX_EPISODIOS);
+
+  fs.writeFileSync(EPISODES_FILE, JSON.stringify(episodes, null, 2));
+  console.log('Episodio nuevo agregado:', encontrado.url);
+
+  const rss = buildRss(episodes);
+  fs.writeFileSync(FEED_FILE, rss);
+  console.log('feed.xml actualizado con', episodes.length, 'episodios.');
 }
 
 main().catch((err) => {
