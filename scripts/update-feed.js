@@ -68,19 +68,30 @@ async function existe(url) {
   }
 }
 
-async function buscarAudioDeHoy() {
+async function buscarAudioEnRango(diasHaciaAtras) {
   const hoy = new Date();
-  const candidatos = candidatosParaFecha(hoy);
+  const encontrados = [];
 
-  console.log('Probando', candidatos.length, 'URLs candidatas para hoy...');
+  for (let i = 0; i < diasHaciaAtras; i++) {
+    const fecha = new Date(hoy);
+    fecha.setUTCDate(fecha.getUTCDate() - i);
 
-  for (const url of candidatos) {
-    const ok = await existe(url);
-    console.log(ok ? 'ENCONTRADO ->' : 'no existe  ->', url);
-    if (ok) return { url, fecha: hoy };
+    const candidatos = candidatosParaFecha(fecha);
+    console.log(
+      '--- Revisando ' + fecha.toISOString().slice(0, 10) + ' ---'
+    );
+
+    for (const url of candidatos) {
+      const ok = await existe(url);
+      console.log(ok ? 'ENCONTRADO ->' : 'no existe  ->', url);
+      if (ok) {
+        encontrados.push({ url, fecha: new Date(fecha) });
+        break; // ya encontramos el de este día, pasamos al día anterior
+      }
+    }
   }
 
-  return null;
+  return encontrados;
 }
 
 function escapeXml(s) {
@@ -119,14 +130,17 @@ ${items}
 `;
 }
 
-async function main() {
-  const encontrado = await buscarAudioDeHoy();
+const DIAS_HACIA_ATRAS = 5; // cuántos días para atrás revisa, para no perderse episodios
 
-  if (!encontrado) {
+async function main() {
+  const encontrados = await buscarAudioEnRango(DIAS_HACIA_ATRAS);
+
+  if (encontrados.length === 0) {
     console.log(
-      'No se encontró ningún archivo de audio hoy con los patrones conocidos. ' +
-        'Puede ser que hoy no haya programa, o que la diaria haya usado un ' +
-        'nombre de archivo nuevo que todavía no conocemos.'
+      'No se encontró ningún archivo de audio en los últimos ' +
+        DIAS_HACIA_ATRAS +
+        ' días con los patrones conocidos. Puede ser que la diaria haya ' +
+        'usado un nombre de archivo nuevo que todavía no conocemos.'
     );
     return;
   }
@@ -136,28 +150,42 @@ async function main() {
     episodes = JSON.parse(fs.readFileSync(EPISODES_FILE, 'utf8'));
   }
 
-  const yaExiste = episodes.some((ep) => ep.url === encontrado.url);
-  if (yaExiste) {
-    console.log('Este episodio ya estaba guardado. No se agrega de nuevo.');
+  let agregados = 0;
+  for (const { url, fecha } of encontrados) {
+    const yaExiste = episodes.some((ep) => ep.url === url);
+    if (yaExiste) continue;
+
+    episodes.unshift({
+      date: fecha.toISOString(),
+      title:
+        'La mañana de la diaria — ' +
+        fecha.toLocaleDateString('es-UY', { timeZone: 'UTC' }),
+      url
+    });
+    agregados++;
+    console.log('Episodio nuevo agregado:', url);
+  }
+
+  if (agregados === 0) {
+    console.log('No hay episodios nuevos para agregar (ya estaban todos).');
     return;
   }
 
-  const fecha = encontrado.fecha;
-  episodes.unshift({
-    date: fecha.toISOString(),
-    title:
-      'La mañana de la diaria — ' +
-      fecha.toLocaleDateString('es-UY', { timeZone: 'UTC' }),
-    url: encontrado.url
-  });
+  // Ordenar por fecha, más reciente primero, y recortar al máximo permitido
+  episodes.sort((a, b) => new Date(b.date) - new Date(a.date));
   episodes = episodes.slice(0, MAX_EPISODIOS);
 
   fs.writeFileSync(EPISODES_FILE, JSON.stringify(episodes, null, 2));
-  console.log('Episodio nuevo agregado:', encontrado.url);
 
   const rss = buildRss(episodes);
   fs.writeFileSync(FEED_FILE, rss);
-  console.log('feed.xml actualizado con', episodes.length, 'episodios.');
+  console.log(
+    'feed.xml actualizado:',
+    agregados,
+    'episodio(s) nuevo(s),',
+    episodes.length,
+    'en total.'
+  );
 }
 
 main().catch((err) => {
