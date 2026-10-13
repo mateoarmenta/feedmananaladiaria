@@ -1,5 +1,10 @@
 [
   {
+    "date": "2026-10-13T21:46:39.469Z",
+    "title": "La mañana de la diaria — 13/10/2026",
+    "url": "https://ladiaria.com.uy/media/audiologue/LaMa%C3%B1anaDeLaDiaria_261013_CMS.mov"
+  },
+  {
     "date": "2026-10-12T23:33:36.899Z",
     "title": "La mañana de la diaria — 12/10/2026",
     "url": "https://ladiaria.com.uy/media/audiologue/LaMa%C3%B1anaDeLaDiaria_261012_CMS.mov"
@@ -293,10 +298,5 @@
     "date": "2026-07-21T12:00:00.000Z",
     "title": "La mañana de la diaria — 21/7/2026",
     "url": "https://ladiaria.com.uy/media/audiologue/LaMa%C3%B1anaDeLaDiaria_260721_CMS.mp3"
-  },
-  {
-    "date": "2026-07-20T12:00:00.000Z",
-    "title": "La mañana de la diaria — 20/7/2026",
-    "url": "https://ladiaria.com.uy/media/audiologue/LaMa%C3%B1anaDeLaDiaria_260720_CMS.mp3"
   }
 ]
