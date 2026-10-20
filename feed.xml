@@ -7,6 +7,13 @@
 <language>es-uy</language>
 <itunes:author>la diaria Radio</itunes:author>
 <item>
+<title>La mañana de la diaria — 20/10/2026</title>
+<link>https://radio.ladiaria.com.uy/la-manana-de-la-diaria</link>
+<guid isPermaLink="false">https://ladiaria.com.uy/media/audiologue/LaMa%C3%B1anaDeLaDiaria_261020_CMS.mov</guid>
+<pubDate>Tue, 20 Oct 2026 20:23:07 GMT</pubDate>
+<enclosure url="https://ladiaria.com.uy/media/audiologue/LaMa%C3%B1anaDeLaDiaria_261020_CMS.mov" type="audio/mpeg" length="0"/>
+</item>
+<item>
 <title>La mañana de la diaria — 19/10/2026</title>
 <link>https://radio.ladiaria.com.uy/la-manana-de-la-diaria</link>
 <guid isPermaLink="false">https://ladiaria.com.uy/media/audiologue/LaMa%C3%B1anaDeLaDiaria_261019_CMS.mov</guid>
@@ -418,13 +425,6 @@
 <guid isPermaLink="false">https://ladiaria.com.uy/media/audiologue/LaMa%C3%B1anaDeLaDiaria_260728_CMS.mov</guid>
 <pubDate>Tue, 28 Jul 2026 20:12:50 GMT</pubDate>
 <enclosure url="https://ladiaria.com.uy/media/audiologue/LaMa%C3%B1anaDeLaDiaria_260728_CMS.mov" type="audio/mpeg" length="0"/>
-</item>
-<item>
-<title>La mañana de la diaria — 27/7/2026</title>
-<link>https://radio.ladiaria.com.uy/la-manana-de-la-diaria</link>
-<guid isPermaLink="false">https://ladiaria.com.uy/media/audiologue/LaMa%C3%B1anaDeLaDiaria_260727_CMS.mov</guid>
-<pubDate>Mon, 27 Jul 2026 20:12:50 GMT</pubDate>
-<enclosure url="https://ladiaria.com.uy/media/audiologue/LaMa%C3%B1anaDeLaDiaria_260727_CMS.mov" type="audio/mpeg" length="0"/>
 </item>
 </channel>
 </rss>
