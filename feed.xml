@@ -7,6 +7,20 @@
 <language>es-uy</language>
 <itunes:author>la diaria Radio</itunes:author>
 <item>
+<title>La mañana de la diaria — 9/11/2026</title>
+<link>https://radio.ladiaria.com.uy/la-manana-de-la-diaria</link>
+<guid isPermaLink="false">https://ladiaria.com.uy/media/audiologue/LaMa%C3%B1anaDeLaDiaria_261109_CMS.mov</guid>
+<pubDate>Mon, 09 Nov 2026 00:37:19 GMT</pubDate>
+<enclosure url="https://ladiaria.com.uy/media/audiologue/LaMa%C3%B1anaDeLaDiaria_261109_CMS.mov" type="audio/mpeg" length="0"/>
+</item>
+<item>
+<title>La mañana de la diaria — 6/11/2026</title>
+<link>https://radio.ladiaria.com.uy/la-manana-de-la-diaria</link>
+<guid isPermaLink="false">https://ladiaria.com.uy/media/audiologue/LaMa%C3%B1anaDeLaDiaria_261106_CMS.mov</guid>
+<pubDate>Fri, 06 Nov 2026 00:37:19 GMT</pubDate>
+<enclosure url="https://ladiaria.com.uy/media/audiologue/LaMa%C3%B1anaDeLaDiaria_261106_CMS.mov" type="audio/mpeg" length="0"/>
+</item>
+<item>
 <title>La mañana de la diaria — 5/11/2026</title>
 <link>https://radio.ladiaria.com.uy/la-manana-de-la-diaria</link>
 <guid isPermaLink="false">https://ladiaria.com.uy/media/audiologue/LaMa%C3%B1anaDeLaDiaria_261105_CMS.mov</guid>
@@ -411,20 +425,6 @@
 <guid isPermaLink="false">https://ladiaria.com.uy/media/audiologue/LaMa%C3%B1anaDeLaDiaria_260814_CMS.mov</guid>
 <pubDate>Fri, 14 Aug 2026 19:51:20 GMT</pubDate>
 <enclosure url="https://ladiaria.com.uy/media/audiologue/LaMa%C3%B1anaDeLaDiaria_260814_CMS.mov" type="audio/mpeg" length="0"/>
-</item>
-<item>
-<title>La mañana de la diaria — 13/8/2026</title>
-<link>https://radio.ladiaria.com.uy/la-manana-de-la-diaria</link>
-<guid isPermaLink="false">https://ladiaria.com.uy/media/audiologue/LaMa%C3%B1anaDeLaDiaria_260813_CMS.mov</guid>
-<pubDate>Thu, 13 Aug 2026 19:58:30 GMT</pubDate>
-<enclosure url="https://ladiaria.com.uy/media/audiologue/LaMa%C3%B1anaDeLaDiaria_260813_CMS.mov" type="audio/mpeg" length="0"/>
-</item>
-<item>
-<title>La mañana de la diaria — 12/8/2026</title>
-<link>https://radio.ladiaria.com.uy/la-manana-de-la-diaria</link>
-<guid isPermaLink="false">https://ladiaria.com.uy/media/audiologue/LaMa%C3%B1anaDeLaDiaria_260812_CMS.mov</guid>
-<pubDate>Wed, 12 Aug 2026 20:04:12 GMT</pubDate>
-<enclosure url="https://ladiaria.com.uy/media/audiologue/LaMa%C3%B1anaDeLaDiaria_260812_CMS.mov" type="audio/mpeg" length="0"/>
 </item>
 </channel>
 </rss>
